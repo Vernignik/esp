@@ -11,7 +11,7 @@ local Config = {
     NamesOutlineColor = Color3.fromRGB(0,0,0),
     NamesFont         = 2, -- 0,1,2,3
     NamesSize         = 13,
-    MaxDistance       = 100  -- Максимальное расстояние в метрах
+    MaxDistance       = 350  -- Максимальное расстояние в метрах
 }
 
 function CreateEsp(Player)
