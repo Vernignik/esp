@@ -10,7 +10,8 @@ local Config = {
     NamesColor        = Color3.fromRGB(255,255,255),
     NamesOutlineColor = Color3.fromRGB(0,0,0),
     NamesFont         = 2, -- 0,1,2,3
-    NamesSize         = 13
+    NamesSize         = 13,
+    MaxDistance       = 350  -- Максимальное расстояние в метрах
 }
 
 function CreateEsp(Player)
@@ -18,6 +19,16 @@ function CreateEsp(Player)
     local Updater = game:GetService("RunService").RenderStepped:Connect(function()
     if Player.Character ~= nil and Player.Character:FindFirstChild("Humanoid") ~= nil and Player.Character:FindFirstChild("HumanoidRootPart") ~= nil and Player.Character.Humanoid.Health > 0 and Player.Character:FindFirstChild("Head") ~= nil then
             local Target2dPosition,IsVisible = workspace.CurrentCamera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position)
+            local distance = (workspace.CurrentCamera.CFrame.p - Player.Character.HumanoidRootPart.Position).magnitude  -- Вычисление дистанции
+            if distance > Config.MaxDistance then  -- Если игрок слишком далеко, скрываем ESP
+                Box.Visible = false
+                BoxOutline.Visible = false
+                Name.Visible = false
+                HealthBar.Visible = false
+                HealthBarOutline.Visible = false
+                return
+            end
+            
             local scale_factor = 1 / (Target2dPosition.Z * math.tan(math.rad(workspace.CurrentCamera.FieldOfView * 0.5)) * 2) * 100
             local width, height = math.floor(40 * scale_factor), math.floor(60 * scale_factor)
             if Config.Box then
@@ -44,7 +55,7 @@ function CreateEsp(Player)
             if Config.Names then
                 Name.Visible = IsVisible
                 Name.Color = Config.NamesColor
-                Name.Text = Player.Name.." "..math.floor((workspace.CurrentCamera.CFrame.p - Player.Character.HumanoidRootPart.Position).magnitude).."m"
+                Name.Text = Player.Name.." "..math.floor(distance).."m"
                 Name.Center = true
                 Name.Outline = Config.NamesOutline
                 Name.OutlineColor = Config.NamesOutlineColor
@@ -119,4 +130,5 @@ game:GetService("Players").PlayerAdded:Connect(function(v)
       v.CharacterAdded:Connect(CreateEsp(v))
    end
 end)
+
 return Config
